@@ -1,30 +1,25 @@
 package com.example.hemanth.notepad;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.format.DateFormat;
-import android.text.method.ScrollingMovementMethod;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 import android.util.Log;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText data;
     private TextView dTime;
     private Notes notes;
+    private boolean textChanged = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,22 +37,37 @@ public class MainActivity extends AppCompatActivity {
 
         data = (EditText) findViewById(R.id.editText);
         dTime = (TextView) findViewById(R.id.dateTime);
-        dTime.setKeyListener(null);
-        InputMethodManager im = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        im.showSoftInput(data, 0);
-//        data.setMovementMethod(new ScrollingMovementMethod());
-//        data.setTextIsSelectable(true);
-
 
     }
 
     @Override
     protected void onResume() {
         notes = loadfile();
+        textChanged = false;
         if (notes != null) {
             data.setText(notes.getDescription());
             dTime.setText(notes.getDateTime());
         }
+        data.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (notes != null && notes.getDescription() != null) {
+                    if (!notes.getDescription().equalsIgnoreCase(editable.toString())) {
+                        textChanged = true;
+                    }
+                }
+            }
+        });
         super.onResume();
     }
 
@@ -71,10 +83,9 @@ public class MainActivity extends AppCompatActivity {
                 if (name.equals("description")) {
                     notes.setDescription(reader.nextString());
 
-                } else if (name.equals("dt")){
+                } else if (name.equals("dt")) {
                     notes.setDateTime(reader.nextString());
-                }
-                else {
+                } else {
                     reader.skipValue();
                 }
             }
@@ -92,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
 
         return notes;
     }
-
 
 
     @Override
@@ -123,7 +133,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        saveNotes();
+        if (textChanged) {
+            saveNotes();
+        }
         super.onStop();
     }
 
@@ -164,36 +176,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public String dtConversion(){
-        Date dNow = new Date( );
+    public String dtConversion() {
+        Date dNow = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("E MMM d, hh:mm:ss a");
-        return ("Last Update: "+ ft.format(dNow));
+        return ("Last Update: " + ft.format(dNow));
     }
-
-//    public class LoadTask extends AsyncTask<Object,Object,Object>{
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Object o) {
-//            super.onPostExecute(o);
-//        }
-//
-//        @Override
-//        protected void onProgressUpdate(Object... values) {
-//            super.onProgressUpdate(values);
-//        }
-//
-//        @Override
-//        protected Object doInBackground(Object... objects) {
-//
-//            return null;
-//        }
-//    }
 
 
 }
