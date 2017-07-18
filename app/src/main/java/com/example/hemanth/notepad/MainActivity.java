@@ -1,6 +1,7 @@
 package com.example.hemanth.notepad;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -98,18 +99,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
 
-        notes.setDescription(data.getText().toString());
-        notes.setDateTime(dtConversion());
         super.onPause();
 
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-
+        super.onSaveInstanceState(outState);
         outState.putString("dataTv", data.getText().toString());
         outState.putString("dtTv", dTime.getText().toString());
-        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -137,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             writer.beginObject();
             writer.name("description").value(notes.getDescription());
             notes.setDateTime(dtConversion());
-            writer.name("dt").value(dtConversion());
+            writer.name("dt").value(notes.getDateTime());
             writer.endObject();
             writer.close();
 
@@ -170,30 +168,7 @@ public class MainActivity extends AppCompatActivity {
         return ("Last Update: "+ ft.format(dNow));
     }
 
-//    public class LoadTask extends AsyncTask<Object,Object,Object>{
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Object o) {
-//            super.onPostExecute(o);
-//        }
-//
-//        @Override
-//        protected void onProgressUpdate(Object... values) {
-//            super.onProgressUpdate(values);
-//        }
-//
-//        @Override
-//        protected Object doInBackground(Object... objects) {
-//
-//            return null;
-//        }
-//    }
+
 
 
 }

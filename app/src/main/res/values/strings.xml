@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">NotePad</string>
 
-    <string name="enter_your_data">Enter your data</string>
+    <string name="enter_your_data">Enter Note</string>
     <string name="file_name">notes.json</string>
     <string name="encoding">UTF-8</string>
     <string name="no_file">File Not Found</string>
