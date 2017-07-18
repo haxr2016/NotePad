@@ -5,6 +5,8 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.text.method.ScrollingMovementMethod;
 import android.util.JsonReader;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText data;
     private TextView dTime;
     private Notes notes;
+    private boolean textChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
         data = (EditText) findViewById(R.id.editText);
         dTime = (TextView) findViewById(R.id.dateTime);
+
         dTime.setKeyListener(null);
-        InputMethodManager im = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         im.showSoftInput(data, 0);
 //        data.setMovementMethod(new ScrollingMovementMethod());
 //        data.setTextIsSelectable(true);
@@ -54,10 +58,33 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         notes = loadfile();
         if (notes != null) {
+            textChanged = false;
             data.setText(notes.getDescription());
             dTime.setText(notes.getDateTime());
         }
+
+        data.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (notes != null) {
+                    if (!notes.getDescription().equalsIgnoreCase(editable.toString())) {
+                        textChanged = true;
+                    }
+                }
+            }
+        });
         super.onResume();
+
     }
 
     private Notes loadfile() {
@@ -72,10 +99,9 @@ public class MainActivity extends AppCompatActivity {
                 if (name.equals("description")) {
                     notes.setDescription(reader.nextString());
 
-                } else if (name.equals("dt")){
+                } else if (name.equals("dt")) {
                     notes.setDateTime(reader.nextString());
-                }
-                else {
+                } else {
                     reader.skipValue();
                 }
             }
@@ -95,10 +121,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onPause() {
-
+        notes.setDescription(data.getText().toString());
+        notes.setDateTime(dtConversion());
         super.onPause();
 
     }
@@ -120,8 +146,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
     protected void onStop() {
-        saveNotes();
+        if (textChanged) {
+            saveNotes();
+        }
         super.onStop();
     }
 
@@ -162,13 +195,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public String dtConversion(){
-        Date dNow = new Date( );
+    public String dtConversion() {
+        Date dNow = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("E MMM d, hh:mm:ss a");
-        return ("Last Update: "+ ft.format(dNow));
+        return ("Last Update: " + ft.format(dNow));
     }
-
-
 
 
 }
