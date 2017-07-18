@@ -12,6 +12,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -44,13 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
         data = (EditText) findViewById(R.id.editText);
         dTime = (TextView) findViewById(R.id.dateTime);
-
-        dTime.setKeyListener(null);
-        InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        im.showSoftInput(data, 0);
-//        data.setMovementMethod(new ScrollingMovementMethod());
-//        data.setTextIsSelectable(true);
-
 
     }
 
